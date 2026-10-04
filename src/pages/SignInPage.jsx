@@ -1,77 +1,74 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ChevronLeftIcon, EyeIcon, EyeOffIcon, HardHatIcon, LockIcon, UserIcon } from '../components/icons'
+import { useToast } from '../context/ToastContext'
 
-function ChevronLeftIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-    </svg>
-  )
-}
+// Frontend-only stub. Swap this for a real API call when the backend is ready.
+// Resolves on valid demo credentials, rejects with a tagged reason otherwise.
+// Credentials come from .env.local (gitignored), so nothing sensitive is committed -
+// see .env.example for the variable names.
+const DEMO_USERNAME = import.meta.env.VITE_DEMO_USERNAME
+const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD
 
-function HardHatIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 18h16" />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M5 18a7 7 0 0 1 14 0"
-      />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v4" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5.5h6a1.5 1.5 0 0 1 1.5 1.5v.5h-9V7a1.5 1.5 0 0 1 1.5-1.5Z" />
-    </svg>
-  )
-}
-
-function UserIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 20a7.5 7.5 0 0 1 15 0" />
-    </svg>
-  )
-}
-
-function LockIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
-      <rect x="5" y="11" width="14" height="9" rx="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M8 11V7a4 4 0 1 1 8 0v4" />
-    </svg>
-  )
-}
-
-function EyeIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z"
-      />
-      <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function EyeOffIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M3 3l18 18M10.6 10.6a3 3 0 0 0 4.24 4.24M6.6 6.7C4.3 8.2 2.5 12 2.5 12s3.5 7 9.5 7c1.9 0 3.5-.5 4.8-1.3M17.4 17.3C19.6 15.8 21.5 12 21.5 12s-3.5-7-9.5-7c-.6 0-1.2.05-1.8.16"
-      />
-    </svg>
-  )
+function signIn({ username, password }) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (username === DEMO_USERNAME && password === DEMO_PASSWORD) {
+        resolve({ username })
+      } else {
+        reject(new Error('invalid_credentials'))
+      }
+    }, 700)
+  })
 }
 
 export default function SignInPage() {
+  const navigate = useNavigate()
+  const toast = useToast()
   const [showPassword, setShowPassword] = useState(false)
   const [keepSignedIn, setKeepSignedIn] = useState(true)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleChange = (setter, field) => (e) => {
+    setter(e.target.value)
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }))
+  }
+
+  const validate = (trimmedUsername) => {
+    const nextErrors = {}
+    if (!trimmedUsername) nextErrors.username = 'Username is required.'
+    if (!password) nextErrors.password = 'Password is required.'
+    return nextErrors
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    if (isSubmitting) return
+
+    const trimmedUsername = username.trim()
+    const nextErrors = validate(trimmedUsername)
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors)
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      await signIn({ username: trimmedUsername, password })
+      setUsername(trimmedUsername)
+      toast.success('Login successful. Redirecting...')
+      navigate('/dashboard')
+    } catch (err) {
+      if (err instanceof Error && err.message === 'invalid_credentials') {
+        toast.error('Invalid username or password.')
+      } else {
+        toast.error('Unable to sign in. Please try again.')
+      }
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -108,7 +105,7 @@ export default function SignInPage() {
             <h1 className="text-2xl font-semibold text-slate-900">Sign in to your account</h1>
             <p className="mt-1 text-sm text-gray-500">Enter the username and password.</p>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-5">
               <div>
                 <label htmlFor="username" className="mb-1.5 block text-sm font-medium text-gray-600">
                   Username
@@ -120,10 +117,23 @@ export default function SignInPage() {
                     name="username"
                     type="text"
                     autoComplete="username"
+                    value={username}
+                    onChange={handleChange(setUsername, 'username')}
                     placeholder="Enter your username"
-                    className="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder:text-gray-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    aria-invalid={Boolean(errors.username)}
+                    aria-describedby={errors.username ? 'username-error' : undefined}
+                    className={`w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm text-slate-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 ${
+                      errors.username
+                        ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                        : 'border-gray-300 focus:border-brand focus:ring-brand/20'
+                    }`}
                   />
                 </div>
+                {errors.username && (
+                  <p id="username-error" className="mt-1.5 text-sm text-red-600">
+                    {errors.username}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -142,8 +152,16 @@ export default function SignInPage() {
                     name="password"
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="current-password"
+                    value={password}
+                    onChange={handleChange(setPassword, 'password')}
                     placeholder="Enter your password"
-                    className="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder:text-gray-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                    aria-invalid={Boolean(errors.password)}
+                    aria-describedby={errors.password ? 'password-error' : undefined}
+                    className={`w-full rounded-lg border py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 ${
+                      errors.password
+                        ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                        : 'border-gray-300 focus:border-brand focus:ring-brand/20'
+                    }`}
                   />
                   <button
                     type="button"
@@ -154,6 +172,11 @@ export default function SignInPage() {
                     {showPassword ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p id="password-error" className="mt-1.5 text-sm text-red-600">
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center gap-2">
@@ -171,9 +194,17 @@ export default function SignInPage() {
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-brand py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark"
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-2.5 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-brand"
               >
-                Sign in
+                {isSubmitting && (
+                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                )}
+                {isSubmitting ? 'Signing in...' : 'Sign in'}
               </button>
             </form>
           </div>
