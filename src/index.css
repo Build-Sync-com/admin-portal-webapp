@@ -1,1 +1,13 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-brand: #1d5bff;
+  --color-brand-dark: #1547cc;
+}
+
+/* Hide the browser's native password reveal/clear controls (Edge/IE) so only
+   our custom Show/Hide button is shown. */
+::-ms-reveal,
+::-ms-clear {
+  display: none;
+}
