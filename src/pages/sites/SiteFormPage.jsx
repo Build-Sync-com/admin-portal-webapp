@@ -2,11 +2,21 @@ import { Fragment, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useSites } from '../../context/SitesContext'
 import { useToast } from '../../context/ToastContext'
-import { COUNTRIES, PROJECT_TYPES, SL_DISTRICTS, SL_PROVINCES, calculateDuration, generateProjectId, getPhonePlaceholder } from '../../data/sites'
+import {
+  COUNTRIES,
+  PROJECT_TYPES,
+  SITE_STATUSES,
+  SL_DISTRICTS,
+  SL_PROVINCES,
+  calculateDuration,
+  generateProjectId,
+  getPhonePlaceholder,
+} from '../../data/sites'
 
 const EMPTY_FORM = {
   name: '',
   projectType: PROJECT_TYPES[0],
+  status: SITE_STATUSES[0],
   clientName: '',
   contractRefNo: '',
   consultantName: '',
@@ -339,6 +349,20 @@ export default function SiteFormPage() {
                 ))}
               </select>
               {fieldError('projectType')}
+            </div>
+
+            <div className="sm:col-span-2">
+              <label htmlFor="status" className="mb-1.5 block text-sm font-medium text-gray-600">
+                Status
+              </label>
+              <select id="status" value={form.status} onChange={handleChange('status')} className={inputClass('status')}>
+                {SITE_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+              {fieldError('status')}
             </div>
 
             <div className="sm:col-span-2">
