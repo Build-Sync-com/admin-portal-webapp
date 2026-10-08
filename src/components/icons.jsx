@@ -81,6 +81,59 @@ export function BuildingIcon(props) {
   )
 }
 
+export function PlanIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
+      <rect x="4" y="4" width="16" height="17" rx="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 3.5h6v2.5H9z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8 11h2M8 15h2M13 11h3M13 15h3" />
+    </svg>
+  )
+}
+
+export function WalletIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 7a2 2 0 0 1 2-2h12.5a1.5 1.5 0 0 1 1.5 1.5V8" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v11a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-8a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2Z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 13.5h.01" />
+    </svg>
+  )
+}
+
+export function CalendarIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
+      <rect x="3.5" y="5" width="17" height="15" rx="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.5 9.5h17M8 3.5v3M16 3.5v3" />
+    </svg>
+  )
+}
+
+export function ChevronDownIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 9l7 7 7-7" />
+    </svg>
+  )
+}
+
+export function PlusIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14" />
+    </svg>
+  )
+}
+
+export function ChevronRightIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  )
+}
+
 export function SearchIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" strokeWidth={2} stroke="currentColor" {...props}>

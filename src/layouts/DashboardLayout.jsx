@@ -1,10 +1,13 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { BuildingIcon, HardHatIcon, HomeIcon, LogoutIcon } from '../components/icons'
+import { BuildingIcon, HardHatIcon, HomeIcon, LogoutIcon, PlanIcon, WalletIcon } from '../components/icons'
+import { PlanningProvider } from '../context/PlanningContext'
 import { SitesProvider } from '../context/SitesContext'
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: HomeIcon, end: true },
   { to: '/dashboard/sites', label: 'Construction Sites', icon: BuildingIcon },
+  { to: '/dashboard/planning', label: 'Planning', icon: PlanIcon },
+  { to: '/dashboard/costing', label: 'Costing', icon: WalletIcon },
 ]
 
 export default function DashboardLayout() {
@@ -12,6 +15,7 @@ export default function DashboardLayout() {
 
   return (
     <SitesProvider>
+      <PlanningProvider>
       <div className="flex h-screen bg-gray-50">
         <aside className="flex w-64 shrink-0 flex-col overflow-y-auto border-r border-gray-200 bg-white">
           <div className="shrink-0 px-6 py-6">
@@ -65,6 +69,7 @@ export default function DashboardLayout() {
           </main>
         </div>
       </div>
+      </PlanningProvider>
     </SitesProvider>
   )
 }
